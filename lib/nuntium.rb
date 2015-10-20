@@ -125,7 +125,7 @@ class Nuntium
   #
   # Raises Nuntium::Exception if something goes wrong.
   def channel(name)
-    get(URI.encode("/api/channels/#{name}.json")) do |response, error|
+    get("/api/channels/#{name}.json") do |response, error|
       raise Nuntium::Exception.new error.message if error
 
       channel = JSON.parse response.body
@@ -165,7 +165,7 @@ class Nuntium
     write_configuration channel
     channel_name = channel['name'] || channel[:name]
 
-    put URI.encode("/api/channels/#{channel_name}.json"), channel.to_json do |response, error|
+    put "/api/channels/#{channel_name}.json", channel.to_json do |response, error|
       handle_channel_error error if error
 
       channel = JSON.parse response.body
@@ -178,7 +178,7 @@ class Nuntium
   #
   # Raises Nuntium::Exception if something goes wrong.
   def delete_channel(name)
-    delete URI.encode("/api/channels/#{name}") do |response, error|
+    delete "/api/channels/#{name}" do |response, error|
       raise Nuntium::Exception.new error.message if error
 
       response
