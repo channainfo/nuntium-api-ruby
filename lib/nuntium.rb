@@ -125,7 +125,7 @@ class Nuntium
   #
   # Raises Nuntium::Exception if something goes wrong.
   def channel(name)
-    get("/api/channels/#{name}.json") do |response, error|
+    get(URI.encode("/api/channels/#{name}.json")) do |response, error|
       raise Nuntium::Exception.new error.message if error
 
       channel = JSON.parse response.body
@@ -165,7 +165,7 @@ class Nuntium
     write_configuration channel
     channel_name = channel['name'] || channel[:name]
 
-    put "/api/channels/#{channel_name}.json", channel.to_json do |response, error|
+    put URI.encode("/api/channels/#{channel_name}.json"), channel.to_json do |response, error|
       handle_channel_error error if error
 
       channel = JSON.parse response.body
@@ -178,7 +178,7 @@ class Nuntium
   #
   # Raises Nuntium::Exception if something goes wrong.
   def delete_channel(name)
-    delete "/api/channels/#{name}" do |response, error|
+    delete URI.encode("/api/channels/#{name}") do |response, error|
       raise Nuntium::Exception.new error.message if error
 
       response
@@ -207,13 +207,13 @@ class Nuntium
   # Raises Nuntium::Exception if something goes wrong.
   def send_ao(messages)
     if messages.is_a? Array
-      post "/#{@account}/#{@application}/send_ao.json", messages.to_json do |response, error|
+      post URI.encode("/#{@account}/#{@application}/send_ao.json"), messages.to_json do |response, error|
         raise Nuntium::Exception.new error.message if error
 
         with_indifferent_access({:token => response.headers[:x_nuntium_token]})
       end
     else
-      get "/#{@account}/#{@application}/send_ao?#{to_query messages}" do |response, error|
+      get URI.encode("/#{@account}/#{@application}/send_ao?")+"#{to_query messages}" do |response, error|
         raise Nuntium::Exception.new error.message if error
 
         with_indifferent_access(
@@ -231,7 +231,7 @@ class Nuntium
   #
   # Raises Nuntium::Exception if something goes wrong.
   def get_ao(token)
-    get_json "/#{@account}/#{@application}/get_ao.json?token=#{token}"
+    get_json URI.encode("/#{@account}/#{@application}/get_ao.json?token=#{token}")
   end
 
   # Gets the custom attributes specified for a given address. Returns a hash with the attributes
